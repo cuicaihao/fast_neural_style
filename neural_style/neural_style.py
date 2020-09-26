@@ -87,7 +87,8 @@ def train(args):
             features_y = vgg(y)
             features_x = vgg(x)
 
-            content_loss = args.content_weight * mse_loss(features_y.relu2_2, features_x.relu2_2)
+            content_loss = args.content_weight * \
+                mse_loss(features_y.relu2_2, features_x.relu2_2)
 
             style_loss = 0.
             for ft_y, gm_s in zip(features_y, gram_style):
@@ -105,9 +106,9 @@ def train(args):
             if (batch_id + 1) % args.log_interval == 0:
                 mesg = "{}\tEpoch {}:\t[{}/{}]\tcontent: {:.6f}\tstyle: {:.6f}\ttotal: {:.6f}".format(
                     time.ctime(), e + 1, count, len(train_dataset),
-                                  agg_content_loss / (batch_id + 1),
-                                  agg_style_loss / (batch_id + 1),
-                                  (agg_content_loss + agg_style_loss) / (batch_id + 1)
+                    agg_content_loss / (batch_id + 1),
+                    agg_style_loss / (batch_id + 1),
+                    (agg_content_loss + agg_style_loss) / (batch_id + 1)
                 )
                 print(mesg)
 
@@ -115,8 +116,10 @@ def train(args):
                 transformer.eval()
                 if args.cuda:
                     transformer.cpu()
-                ckpt_model_filename = "ckpt_epoch_" + str(e) + "_batch_id_" + str(batch_id + 1) + ".pth"
-                ckpt_model_path = os.path.join(args.checkpoint_model_dir, ckpt_model_filename)
+                ckpt_model_filename = "ckpt_epoch_" + \
+                    str(e) + "_batch_id_" + str(batch_id + 1) + ".pth"
+                ckpt_model_path = os.path.join(
+                    args.checkpoint_model_dir, ckpt_model_filename)
                 torch.save(transformer.state_dict(), ckpt_model_path)
                 if args.cuda:
                     transformer.cuda()
@@ -135,16 +138,20 @@ def train(args):
 
 
 def stylize(args):
-    content_image = utils.load_image(args.content_image, scale=args.content_scale)
+    content_image = utils.load_image(
+        args.content_image, scale=args.content_scale)
     content_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255))
     ])
     content_image = content_transform(content_image)
     content_image = content_image.unsqueeze(0)
+
     if args.cuda:
         content_image = content_image.cuda()
-    content_image = Variable(content_image, volatile=True)
+
+    with torch.no_grad():
+        content_image = Variable(content_image)
 
     style_model = TransformerNet()
     style_model.load_state_dict(torch.load(args.model))
@@ -158,10 +165,13 @@ def stylize(args):
 
 
 def main():
-    main_arg_parser = argparse.ArgumentParser(description="parser for fast-neural-style")
-    subparsers = main_arg_parser.add_subparsers(title="subcommands", dest="subcommand")
+    main_arg_parser = argparse.ArgumentParser(
+        description="parser for fast-neural-style")
+    subparsers = main_arg_parser.add_subparsers(
+        title="subcommands", dest="subcommand")
 
-    train_arg_parser = subparsers.add_parser("train", help="parser for training arguments")
+    train_arg_parser = subparsers.add_parser(
+        "train", help="parser for training arguments")
     train_arg_parser.add_argument("--epochs", type=int, default=2,
                                   help="number of training epochs, default is 2")
     train_arg_parser.add_argument("--batch-size", type=int, default=4,
@@ -194,7 +204,8 @@ def main():
     train_arg_parser.add_argument("--checkpoint-interval", type=int, default=2000,
                                   help="number of batches after which a checkpoint of the trained model will be created")
 
-    eval_arg_parser = subparsers.add_parser("eval", help="parser for evaluation/stylizing arguments")
+    eval_arg_parser = subparsers.add_parser(
+        "eval", help="parser for evaluation/stylizing arguments")
     eval_arg_parser.add_argument("--content-image", type=str, required=True,
                                  help="path to content image you want to stylize")
     eval_arg_parser.add_argument("--content-scale", type=float, default=None,
