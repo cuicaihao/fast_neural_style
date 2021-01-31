@@ -1,11 +1,22 @@
 # fast-neural-style :city_sunrise: :rocket:
 
+Last Update Time: 31-Jan-2021
+
 This repository contains a pytorch implementation of an algorithm for artistic style transfer. The algorithm can be used to mix the content of an image with the style of another image. For example, here is a photograph of a door arch rendered in the style of a stained glass painting.
 
 ## Requirement:
 
-- Python=3.6
-- PyTorch=0.30 in 2017.
+Development Environment:
+
+- Python=3.8.3
+- PyTorch=1.7.0 (2021)
+-
+
+Thanks [mratsim](https://github.com/zhanghang1989/PyTorch-Multi-Style-Transfer/issues/21#issuecomment-396075362)'s solution, I updated the repo so it runs well with the most recent PyTorch version.
+
+Note the original repo used early PyTorch version. It may cause the issues with the model.
+
+- PyTorch=0.30 in 2017 (original / deprecated).
 
 The model uses the method described in [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](https://arxiv.org/abs/1603.08155) along with [Instance Normalization](https://arxiv.org/pdf/1607.08022.pdf). The saved-models for examples shown in the README can be downloaded from [here](https://www.dropbox.com/s/lrvwfehqdcxoza8/saved_models.zip?dl=0).
 
@@ -15,6 +26,12 @@ The program is written in Python, and uses [pytorch](http://pytorch.org/), [scip
 
 ```bash
 bash Demo.sh # check the sample.
+```
+
+or use pretrained models by editing 'test.sh'
+
+```bash
+bash Test.sh
 ```
 
 ## Usage

@@ -153,8 +153,17 @@ def stylize(args):
     with torch.no_grad():
         content_image = Variable(content_image)
 
+    # hotfix PyTorch >0,4,0
+    model_dict = torch.load(args.model)
+    model_dict_clone = model_dict.copy()  # We can't mutate while iterating
+    for key, value in model_dict_clone.items():
+        if key.endswith(('running_mean', 'running_var')):
+            del model_dict[key]
+
     style_model = TransformerNet()
-    style_model.load_state_dict(torch.load(args.model))
+    style_model.load_state_dict(model_dict, False)
+
+    # style_model.load_state_dict(torch.load(args.model)) # remove the original code
     if args.cuda:
         style_model.cuda()
     output = style_model(content_image)
@@ -235,4 +244,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print('Task Finished!')
+    print('[===>] Task Finished!')
