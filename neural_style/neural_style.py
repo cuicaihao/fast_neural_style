@@ -35,7 +35,7 @@ def train(args):
         torch.cuda.manual_seed(args.seed)
 
     transform = transforms.Compose([
-        transforms.Scale(args.image_size),
+        transforms.Resize(args.image_size),
         transforms.CenterCrop(args.image_size),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255))
@@ -100,8 +100,8 @@ def train(args):
             total_loss.backward()
             optimizer.step()
 
-            agg_content_loss += content_loss.data[0]
-            agg_style_loss += style_loss.data[0]
+            agg_content_loss += content_loss.data
+            agg_style_loss += style_loss.data
 
             if (batch_id + 1) % args.log_interval == 0:
                 mesg = "{}\tEpoch {}:\t[{}/{}]\tcontent: {:.6f}\tstyle: {:.6f}\ttotal: {:.6f}".format(
